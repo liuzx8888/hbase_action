@@ -14,8 +14,12 @@ import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.filter.BinaryComparator;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.filter.SkipFilter;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.util.Bytes;
 import com.hbase.learn.common.HBaseHelper;
 
@@ -26,10 +30,10 @@ public class CustomFilterExample {
 		
     	  Configuration conf = HBaseConfiguration.create();
   	    HBaseHelper helper = HBaseHelper.getHelper(conf);
-//  	    helper.dropTable("testtable");
-//  	    helper.createTable("testtable", "colfam1");
-//  	    System.out.println("Adding rows to table...");
-//  	    helper.fillTable("testtable", 1, 10, 10, 2, true, "colfam1");
+  	    helper.dropTable("testtable");
+  	    helper.createTable("testtable", "colfam1");
+  	    System.out.println("Adding rows to table...");
+  	    helper.fillTable("testtable", 1, 10, 10, 2, true, "colfam1");
 
   	    Connection connection = ConnectionFactory.createConnection(conf);
   	    Table table = connection.getTable(TableName.valueOf("testtable"));
@@ -48,9 +52,12 @@ public class CustomFilterExample {
   	    FilterList filterList = new FilterList(
   	      FilterList.Operator.MUST_PASS_ONE, filters);
 
-  	    Filter filterL = new CustomFilterL("row-07","row-08");
+  	    Filter filterL = new CustomFilterL("row-01","row-08");
+
   	    
   	    Scan scan = new Scan();
+
+
   	    scan.setFilter(filterL);
   	    ResultScanner scanner = table.getScanner(scan);
   	    // ^^ CustomFilterExample
@@ -63,7 +70,6 @@ public class CustomFilterExample {
   	          Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
   	            cell.getValueLength()) +
   	    	       ", Rowkey: " +  new String(cell.getRow())
-
   	        		);
   	      }
   	    }

@@ -39,6 +39,8 @@
 		<name>hbase.client.write.buffer</name>
 		<value>20971520</value>
 	</property>
+	
+	
 
 
 </configuration>

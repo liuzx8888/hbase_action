@@ -1,13 +1,23 @@
 package com.hbase.learn.hbase_action.ch04;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.coprocessor.ObserverContext;
+import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import com.hbase.learn.common.HBaseHelper;
 
@@ -15,14 +25,41 @@ public class TestCoprocess {
 public static void main(String[] args) throws Exception {
 	Configuration conf = HBaseConfiguration.create();
 	HBaseHelper helper = HBaseHelper.getHelper(conf);
-	helper.dropTable("testtable");
-	helper.createTable("testtable", "colfam1", "colfam2");
-	System.out.println("Adding rows to table...");
-	helper.fillTable("testtable", 1, 10, 10, "colfam1", "colfam2");
-	Connection connection = ConnectionFactory.createConnection(conf);
-	Table table = connection.getTable(TableName.valueOf("testtable"));
-
+//	helper.dropTable("testtable_idx_idx");
+//	helper.createTable("testtable", "colfam1");
+//	helper.fillTable("testtable", 1, 10, 10, "colfam1");
 	
 
+	Connection connection = ConnectionFactory.createConnection(conf);
+	Table table = connection.getTable(TableName.valueOf("testtable_idx"));
+	
+	Get get = new Get(Bytes.toBytes("@@@GETTIME@@@") );
+	get.addFamily(Bytes.toBytes("colfam1"));
+	Result rs = table.get(get);
+	System.out.println(rs);
+	
+	
+	Put put = new Put(Bytes.toBytes("row-1"));
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c4"), Bytes.toBytes("val4"));
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c5"), Bytes.toBytes("val5"));
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c6"), Bytes.toBytes("val6"));	
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c44"), Bytes.toBytes("val44"));
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c55"), Bytes.toBytes("val55"));
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c66"), Bytes.toBytes("val66"));	
+	put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("timestamp"), Bytes.toBytes(System.currentTimeMillis()));		
+	table.put(put);	
+	
+	
+	Put put1 = new Put(Bytes.toBytes("row-2"));
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c4"), Bytes.toBytes("val4"));
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c5"), Bytes.toBytes("val5"));
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c6"), Bytes.toBytes("val6"));	
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c44"), Bytes.toBytes("val44"));
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c55"), Bytes.toBytes("val55"));
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("c66"), Bytes.toBytes("val66"));	
+	put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("timestamp"), Bytes.toBytes(System.currentTimeMillis()));		
+	table.put(put1);		
+	
+	table.close();
 }
 }

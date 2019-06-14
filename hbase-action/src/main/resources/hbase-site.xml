@@ -34,13 +34,20 @@
 		<name>hbase.rootdir</name>
 		<value>hdfs://192.168.1.70:8020/user/hbase</value>
 	</property>
+
 	<!--指定hbase缓冲区大小 -->
 	<property>
 		<name>hbase.client.write.buffer</name>
 		<value>20971520</value>
 	</property>
-	
-	
+
+	<property>
+		<name>hbase.table.sanity.checks</name>
+		<value>false</value>
+	</property>
+
+
+
 
 
 </configuration>

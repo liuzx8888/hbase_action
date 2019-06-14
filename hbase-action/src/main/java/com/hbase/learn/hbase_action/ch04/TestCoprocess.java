@@ -31,7 +31,7 @@ public static void main(String[] args) throws Exception {
 	
 
 	Connection connection = ConnectionFactory.createConnection(conf);
-	Table table = connection.getTable(TableName.valueOf("testtable_idx"));
+	Table table = connection.getTable(TableName.valueOf("testtable"));
 	
 	Get get = new Get(Bytes.toBytes("@@@GETTIME@@@") );
 	get.addFamily(Bytes.toBytes("colfam1"));

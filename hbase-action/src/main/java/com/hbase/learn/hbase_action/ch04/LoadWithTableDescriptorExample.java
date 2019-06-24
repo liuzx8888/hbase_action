@@ -23,17 +23,17 @@ public class LoadWithTableDescriptorExample {
 		Configuration conf = HBaseConfiguration.create();
 		HBaseHelper helper = HBaseHelper.getHelper(conf);
 		Connection conn = helper.getConnection();
-		helper.dropTable("testtable");
+		helper.dropTable("testtable_ep");
 
-		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable"));
+		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable_ep"));
 		htd.addFamily(new HColumnDescriptor("colfam1"));
-		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
-				+ RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
+		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/CustomSumendpoint.jar" + "|"
+				+ CustomEndPointService.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
 
 		Admin admin = conn.getAdmin();
 		admin.createTable(htd);
 		
-		System.out.println(admin.getTableDescriptor(TableName.valueOf("testtable")) );
+		System.out.println(admin.getTableDescriptor(TableName.valueOf("testtable_ep")) );
 
 		admin.close();
 		conn.close();

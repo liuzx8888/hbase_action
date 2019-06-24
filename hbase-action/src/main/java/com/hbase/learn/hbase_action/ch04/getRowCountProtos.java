@@ -903,6 +903,7 @@ public final class getRowCountProtos {
 
     /**
      * <code>rpc getRowCount(.getRowCountRequest) returns (.getRowCountResponse);</code>
+     * @return 
      */
     public abstract void getRowCount(
         com.google.protobuf.RpcController controller,

@@ -2,6 +2,7 @@ package com.hbase.learn.hbase_action.ch04;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -23,8 +24,8 @@ public class CustomEndPointClient {
 		Connection connection = ConnectionFactory.createConnection(conf);
 		Table table= connection.getTable(TableName.valueOf("testtable_ep"));
 		RowSumProtos.RowSumRequest request = RowSumProtos.RowSumRequest.newBuilder()
-				.setStartKey("row-1")
-				.setEndKey("row-3")
+				.setStartKey("row-0")
+				.setEndKey("row-6")
 				.setFamily("colfam1")
 				.setQuailty("c1")
 				.build();
@@ -36,14 +37,15 @@ public class CustomEndPointClient {
 						ServerRpcController controller = new ServerRpcController();
 						BlockingRpcCallback<com.hbase.learn.hbase_action.ch04.RowSumProtos.RowSumResponse> RpcCallback = new BlockingRpcCallback<com.hbase.learn.hbase_action.ch04.RowSumProtos.RowSumResponse>();
 						 instance.getRowSum(controller, request,RpcCallback );
-						 
 						 RowSumProtos.RowSumResponse response= RpcCallback.get();
 						 return response.getRowSum();
 					}
 				}
 				);
+		for (Entry<byte[], Long> entry : rs.entrySet()) {
+			System.err.println(entry.getValue());
+		}
 
-		System.out.println(rs);
 		
 	}
 

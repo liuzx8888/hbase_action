@@ -70,13 +70,15 @@ public class CustomEndPointService extends RowSumService implements Coprocessor,
 		scan.addColumn(Bytes.toBytes(fam), Bytes.toBytes(qua));
 		Filter filter = new CustomFilterL(start_key, end_key);
 		scan.setFilter(filter);
+		//scan.setStartRow(start_key.getBytes()).setStopRow(end_key.getBytes());
 		try {
 			RegionScanner scanner = re.getRegion().getScanner(scan);
 			 List<Cell> results = new ArrayList<Cell>();
 
 			while(scanner.next(results)) {
 			  		for (Cell result : results) {
-						sum = sum + Bytes.toInt(result.getValueArray(), result.getValueOffset(), result.getValueLength());
+			  			LOG.info(result.getValue());
+			  			sum = sum + Integer.valueOf(new String(result.getValue())); 	
 					}	
 			}
 			

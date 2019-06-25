@@ -23,15 +23,16 @@ public class CustomEndPointClient {
 		HBaseHelper helper = HBaseHelper.getHelper(conf);
 		Connection connection = ConnectionFactory.createConnection(conf);
 		Table table= connection.getTable(TableName.valueOf("testtable_ep"));
+		
 		RowSumProtos.RowSumRequest request = RowSumProtos.RowSumRequest.newBuilder()
-				.setStartKey("row-0")
+				.setStartKey("row-5")
 				.setEndKey("row-6")
 				.setFamily("colfam1")
 				.setQuailty("c1")
 				.build();
 		
 
-		Map<byte[], Long> rs = table.coprocessorService(RowSumService.class, null, null, 
+		Map<byte[], Long> rs = table.coprocessorService(RowSumService.class, null,null, 
 				new Batch.Call<RowSumProtos.RowSumService, Long>() {
 					public Long call(RowSumService instance) throws IOException {
 						ServerRpcController controller = new ServerRpcController();
@@ -43,7 +44,7 @@ public class CustomEndPointClient {
 				}
 				);
 		for (Entry<byte[], Long> entry : rs.entrySet()) {
-			System.err.println(entry.getValue());
+			System.out.println(entry.getValue());
 		}
 
 		

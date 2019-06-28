@@ -46,6 +46,11 @@
 		<value>false</value>
 	</property>
 
+	<property>
+		<name>hbase.quota.enabled</name>
+		<value>true</value>
+	</property>
+
 
 
 

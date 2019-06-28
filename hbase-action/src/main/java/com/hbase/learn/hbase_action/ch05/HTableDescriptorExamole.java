@@ -77,16 +77,16 @@ public class HTableDescriptorExamole {
 		 * 	admin.createTable(desc, splitKeys);
 		 */
 
-		 //admin.createTable(htd, Bytes.toBytes(1L), Bytes.toBytes(100L), 20);
-		byte[][] regions= new byte[][] {
-			  Bytes.toBytes("A"),
-		      Bytes.toBytes("D"),
-		      Bytes.toBytes("G"),
-		      Bytes.toBytes("K"),
-		      Bytes.toBytes("O"),
-		      Bytes.toBytes("T")
-		};
-		admin.createTable(htd, regions);
+		 admin.createTable(htd, Bytes.toBytes(1L), Bytes.toBytes(100L), 20);
+//		byte[][] regions= new byte[][] {
+//			  Bytes.toBytes("A"),
+//		      Bytes.toBytes("D"),
+//		      Bytes.toBytes("G"),
+//		      Bytes.toBytes("K"),
+//		      Bytes.toBytes("O"),
+//		      Bytes.toBytes("T")
+//		};
+//		admin.createTable(htd, regions);
 
 		gettableRegion("testtable_htd");
 		

@@ -60,7 +60,7 @@ public class ModifyTableExample {
 		 * admin1.getTableDescriptor 获取当前表，在当前表的基础上修改 表结构
 		 */
 		HTableDescriptor htd1 = admin1.getTableDescriptor(TableName.valueOf("testtable_htd"));
-		htd1.addFamily(new HColumnDescriptor(Bytes.toBytes("colfam3")));
+		htd1.addFamily(new HColumnDescriptor(Bytes.toBytes("colfam2")));
 	
 		admin1.disableTable(TableName.valueOf("testtable_htd"));
 		admin1.modifyTable(TableName.valueOf("testtable_htd"), htd1);
@@ -71,6 +71,8 @@ public class ModifyTableExample {
 				setSecond(50);
 			}
 		};
+		
+		
 		for (int i = 0; status.getFirst() != 0 && i < 500; i++) {
 			status = admin1.getAlterStatus(TableName.valueOf("testtable_htd"));
 			   Thread.sleep(1 * 1000l);

@@ -31,6 +31,7 @@ public class ClusterOperationExample {
 		TableName tableName = TableName.valueOf("testtable_ep");
 		Table table = conn.getTable(tableName);
 		Admin admin = conn.getAdmin();
+        
 
 
 		List<HRegionInfo> regionInfos = admin.getTableRegions(tableName);

@@ -15,6 +15,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Durability;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
@@ -33,43 +34,59 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 
 	public static final byte[] FIXED_ROW = Bytes.toBytes("@@@GETTIME@@@");
 
+	private static Configuration conf;
+	private static HBaseHelper helper;
+	private static Connection conn;
+	static {
+		conf = HBaseConfiguration.create();
+		try {
+			helper = HBaseHelper.getHelper(conf);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection conn = helper.getConnection();
+	}
+
 	@Override
 	public void preGetOp(ObserverContext<RegionCoprocessorEnvironment> e, Get get, List<Cell> results)
 			throws IOException {
-//		LOG.debug("Got preGet for row: " + Bytes.toStringBinary(get.getRow()));
-//		if (Bytes.equals(get.getRow(), FIXED_ROW)) {
-//			Put put = new Put(get.getRow());
-//			put.addColumn(FIXED_ROW, FIXED_ROW, Bytes.toBytes(System.currentTimeMillis()));
-//			CellScanner scanner = put.cellScanner();
-//			scanner.advance();
-//			Cell cell = scanner.current();
-//			LOG.debug("Had a match, adding fake cell: " + cell);
-//			results.add(cell);
-//			e.bypass();
-//		}
-		
-	    LOG.debug("Got preGet for row: " + Bytes.toStringBinary(get.getRow()));
-	    // vv RegionObserverWithBypassExample
-	    if (Bytes.equals(get.getRow(), FIXED_ROW)) {
-	      long time = System.currentTimeMillis();
-	      Cell cell = CellUtil.createCell(get.getRow(), FIXED_ROW, FIXED_ROW, // co RegionObserverWithBypassExample-1-Cell Create cell directly using the supplied utility.
-	        time, KeyValue.Type.Put.getCode(), Bytes.toBytes(time));
-	      // ^^ RegionObserverWithBypassExample
-	      LOG.debug("Had a match, adding fake cell: " + cell);
-	      // vv RegionObserverWithBypassExample
-	      results.add(cell);
-	      /*[*/e.bypass();/*]*/ // co RegionObserverWithBypassExample-2-Bypass Once the special cell is inserted all subsequent coprocessors are skipped.
-	    }
-	    // ^^ RegionObserverWithBypassExample	
+		// LOG.debug("Got preGet for row: " + Bytes.toStringBinary(get.getRow()));
+		// if (Bytes.equals(get.getRow(), FIXED_ROW)) {
+		// Put put = new Put(get.getRow());
+		// put.addColumn(FIXED_ROW, FIXED_ROW,
+		// Bytes.toBytes(System.currentTimeMillis()));
+		// CellScanner scanner = put.cellScanner();
+		// scanner.advance();
+		// Cell cell = scanner.current();
+		// LOG.debug("Had a match, adding fake cell: " + cell);
+		// results.add(cell);
+		// e.bypass();
+		// }
+
+		LOG.debug("Got preGet for row: " + Bytes.toStringBinary(get.getRow()));
+		// vv RegionObserverWithBypassExample
+		if (Bytes.equals(get.getRow(), FIXED_ROW)) {
+			long time = System.currentTimeMillis();
+			Cell cell = CellUtil.createCell(get.getRow(), FIXED_ROW, FIXED_ROW, // co
+																				// RegionObserverWithBypassExample-1-Cell
+																				// Create cell directly using the
+																				// supplied utility.
+					time, KeyValue.Type.Put.getCode(), Bytes.toBytes(time));
+			// ^^ RegionObserverWithBypassExample
+			LOG.debug("Had a match, adding fake cell: " + cell);
+			// vv RegionObserverWithBypassExample
+			results.add(cell);
+			/* [ */e.bypass();/* ] */ // co RegionObserverWithBypassExample-2-Bypass Once the special cell is inserted
+										// all subsequent coprocessors are skipped.
+		}
+		// ^^ RegionObserverWithBypassExample
 	}
 
 	@Override
 	public void prePut(ObserverContext<RegionCoprocessorEnvironment> e, Put put, WALEdit edit, Durability durability)
 			throws IOException {
 
-		Configuration conf = HBaseConfiguration.create();
-		HBaseHelper helper = HBaseHelper.getHelper(conf);
-		Connection conn = helper.getConnection();
 		TableName tableName = e.getEnvironment().getRegion().getTableDesc().getTableName();
 		String idx_tableName = tableName.getNameAsString() + "_idx";
 
@@ -100,5 +117,21 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		table.close();
 	}
 
+	@Override
+	public void postDelete(ObserverContext<RegionCoprocessorEnvironment> e, Delete delete, WALEdit edit,
+			Durability durability) throws IOException {
+		// TODO Auto-generated method stub
+		TableName tableName = e.getEnvironment().getRegion().getTableDesc().getTableName();
+		String idx_tableName = tableName.getNameAsString() + "_idx";
+		Table table = conn.getTable(TableName.valueOf(idx_tableName));
+		byte[] rowkey = delete.getRow();
+
+		if (helper.existsTable(idx_tableName)) {
+			Delete del = new Delete(rowkey);
+			table.delete(del);
+		}
+		table.close();
+
+	}
 
 }

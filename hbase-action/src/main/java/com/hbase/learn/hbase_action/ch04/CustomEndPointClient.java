@@ -25,7 +25,7 @@ public class CustomEndPointClient {
 		Table table= connection.getTable(TableName.valueOf("testtable_ep"));
 		
 		RowSumProtos.RowSumRequest request = RowSumProtos.RowSumRequest.newBuilder()
-				.setStartKey("row-0")
+				.setStartKey("row-5")
 				.setEndKey("row-8")
 				.setFamily("colfam1")
 				.setQuailty("c1")

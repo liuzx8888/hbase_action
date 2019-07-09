@@ -1,5 +1,9 @@
 package com.hbase.learn.hbase_action;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -35,4 +39,16 @@ public class AppTest
     {
         assertTrue( true );
     }
+    
+    public static void main(String[] args) {
+        List<String> regionlist = new ArrayList<String>();
+        regionlist.add("a");
+        regionlist.add("b");
+        regionlist.add("c");     
+       
+        ConsistentHash<String> consistentHash = new ConsistentHash<>(10, regionlist);
+        System.out.println(consistentHash.hashFunc.toString());
+	}
+    
+    
 }

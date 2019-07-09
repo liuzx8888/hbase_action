@@ -4,16 +4,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.MD5Hash;
-
-import com.hbase.learn.common.HBaseHelper;
-
-import org.apache.hadoop.conf.Configuration;
 
 public class RegionSpiltExample {
 
@@ -23,12 +15,12 @@ public class RegionSpiltExample {
 
 		for (int i = 0; i < Spiltregions; i++) {
 			String currenttime_Str = new String(Bytes.toBytes(System.currentTimeMillis()));
-			long region_row = (System.currentTimeMillis()) % (Spiltregions);
-			System.out.println(region_row);
+			long region_row = (System.currentTimeMillis()+i) % (Spiltregions);
+			//System.out.println(region_row);
 			rows_rang = new TreeSet<byte[]>(Bytes.BYTES_COMPARATOR);
 			byte[] a = Bytes.add(
-					 Bytes.toBytes(MD5Hash.getMD5AsHex(Bytes.toBytes(region_row)).substring(0, 4))
-					,Bytes.toBytes(MD5Hash.getMD5AsHex(Bytes.toBytes(Spiltregions-region_row)).substring(4, 8))
+					 Bytes.toBytes(MD5Hash.getMD5AsHex(Bytes.toBytes(region_row)).substring(0,8))
+					,Bytes.toBytes(i)
 							
 					);
 			//System.out.println(new String(a));
@@ -47,10 +39,15 @@ public class RegionSpiltExample {
 		return splitKeys;
 
 	}
+	
+	
+
+	
+	
 
 	public static void main(String[] args) throws IOException, Exception {
 		RegionSpiltExample example = new RegionSpiltExample();
-		byte[][] splitKeys = example.rows(100);
+		byte[][] splitKeys = example.rows(9);
 //		Configuration conf = HBaseConfiguration.create();
 //		HBaseHelper helper = HBaseHelper.getHelper(conf);
 //		Connection conn = helper.getConnection();

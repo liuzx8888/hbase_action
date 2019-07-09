@@ -76,18 +76,20 @@ public class HTableDescriptorExamole {
 		 * 	admin.createTable(desc, startKey, endKey, numRegions);
 		 * 	admin.createTable(desc, splitKeys);
 		 */
-		admin.createTable(htd, null, null, 20);
-		// admin.createTable(htd, Bytes.toBytes(1L), Bytes.toBytes(100L), 20);
+		//admin.createTable(htd, null, null, 20);
+//		 admin.createTable(htd, Bytes.toBytes("region_1"), Bytes.toBytes("region_10"), 10);
 //		byte[][] regions= new byte[][] {
 //			  Bytes.toBytes("A"),
 //		      Bytes.toBytes("D"),
 //		      Bytes.toBytes("G"),
 //		      Bytes.toBytes("K"),
 //		      Bytes.toBytes("O"),
-//		      Bytes.toBytes("T")
+//		      Bytes.toBytes("T")  
 //		};
-//		admin.createTable(htd, regions);
 
+		RegionConsistentHash consistentHash = new RegionConsistentHash();
+		byte[][] regionspilt=RegionConsistentHash.splitRegionKey();
+		admin.createTable(htd, regionspilt);
 		gettableRegion("testtable_htd");
 		
 		/*

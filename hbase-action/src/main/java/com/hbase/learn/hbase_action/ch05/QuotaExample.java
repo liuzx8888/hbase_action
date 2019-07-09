@@ -29,12 +29,13 @@ public class QuotaExample {
 		HBaseHelper helper = HBaseHelper.getHelper(conf);
 		Connection conn = helper.getConnection();
 
-		TableName tableName = TableName.valueOf("testtable_ep");
+		TableName tableName = TableName.valueOf("testtable_htd");
 		Table table = conn.getTable(tableName);
 
 		Admin admin = conn.getAdmin();
-		QuotaSettings qs = QuotaSettingsFactory.throttleTable(tableName, ThrottleType.READ_NUMBER, 1, TimeUnit.MINUTES);
-
+		QuotaSettingsFactory.unthrottleTable(tableName);
+		//QuotaSettings qs = QuotaSettingsFactory.throttleTable(tableName, ThrottleType.READ_NUMBER, 1, TimeUnit.MINUTES);
+		QuotaSettings qs =QuotaSettingsFactory.unthrottleTable(tableName);
 		admin.setQuota(qs);
 		Scan scan = new Scan();
 		// scan.setCaching(1);

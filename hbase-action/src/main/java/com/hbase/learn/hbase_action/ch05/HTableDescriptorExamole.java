@@ -2,6 +2,8 @@ package com.hbase.learn.hbase_action.ch05;
 
 import java.io.IOException;
 
+import javax.print.attribute.standard.Compression;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -11,6 +13,7 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.RegionLocator;
+import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
@@ -59,9 +62,14 @@ public class HTableDescriptorExamole {
 		helper.dropTable("testtable_htd");
 		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable_htd"));
 		htd.addFamily(
-				new HColumnDescriptor("colfam1").setValue("test_key", "test_value").setBloomFilterType(BloomType.ROW));
+				new HColumnDescriptor("colfam1")
+				.setValue("test_key", "test_value")
+				//.setBloomFilterType(BloomType.ROW)
+				.setCompactionCompressionType(Algorithm.SNAPPY)
+				);
 
 		Admin admin = conn.getAdmin();
+		System.out.println("ServersSize :  " +admin.getClusterStatus().getServersSize());
 		/*
 		 * 增加 Namespace shell 查看命令 list_namespace_tables 'Test'
 		 */

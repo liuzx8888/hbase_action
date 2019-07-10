@@ -1,6 +1,7 @@
 package com.hbase.learn.hbase_action.ch05;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +32,9 @@ public class RegionSpiltPutExample {
 
 		TableName tn = TableName.valueOf("testtable_htd");
 		Table table = conn.getTable(tn);
-
+        Random random = new Random();
+		
+		
 		BufferedMutator.ExceptionListener listener = new ExceptionListener() {
 			@Override
 			public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator mutator)
@@ -45,15 +48,18 @@ public class RegionSpiltPutExample {
 		
 		
 		BufferedMutatorParams params = new BufferedMutatorParams(table.getName()).listener(listener);
-		params.writeBufferSize(123123L);
-
+		params.writeBufferSize(1231231L);
+        char[] A_z = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+        Random r = new Random();
+ 
 		try {
 
 			BufferedMutator mutator = conn.getBufferedMutator(params);
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 10000000; i++) {
 				Put put1 = new Put(
 						Bytes.toBytes(
-								RegionConsistentHash.getRegion("row" + String.valueOf(i)) +"_row" + String.valueOf(i)
+								RegionConsistentHash.getRegion(String.valueOf(A_z[r.nextInt(A_z.length)] )) +"-union-" + String.valueOf(i)
 								)
 						);
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("id"), Bytes.toBytes(String.valueOf(i)));

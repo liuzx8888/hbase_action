@@ -3,6 +3,7 @@ package com.hbase.learn.hbase_action;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -48,6 +49,7 @@ public class AppTest
        
         ConsistentHash<String> consistentHash = new ConsistentHash<>(10, regionlist);
         System.out.println(consistentHash.hashFunc.toString());
+        System.out.println(new Random().nextInt(50000000));
 	}
     
     

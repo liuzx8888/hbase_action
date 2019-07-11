@@ -20,13 +20,14 @@ public class RegionConsistentHash {
 	static TreeSet<String> region_ranger = new TreeSet<String>(new MyCompare());
 
 	/*
-	 * 默认每张表建表的时候 默认有 10个region 命名规则---默认 region_i i--> 1到10 使用Hash一致性算法
+	 * 
 	 * 获取当前有多少个服务器
+	 * 计算集群region数量的公式：((RS Xmx) * hbase.regionserver.global.memstore.size) 
+	 * / (hbase.hregion.memstore.flush.size * (# column families))
 	 */
 	
 	private static int  numberOfRregion ;
-	
-
+	private static int  memstoreSize =8*1024 ;
 	static {
 		
 		Configuration  conf =  HBaseConfiguration.create();
@@ -34,7 +35,12 @@ public class RegionConsistentHash {
 			HBaseHelper helper=  HBaseHelper.getHelper(conf);
 			Connection conn =  helper.getConnection();
 			Admin admin = conn.getAdmin();
-			numberOfRregion = (admin.getClusterStatus().getServersSize()) * 3-1;
+			int serversNum =admin.getClusterStatus().getServersSize();
+			int deadserversNum =admin.getClusterStatus().getDeadServers();
+			float memstoreUppLimit=Float.valueOf(conf.get("hbase.regionserver.global.memstore.upperLimit","0.4"));
+			float memstoreFlush=Float.valueOf(conf.get("hbase.hregion.memstore.flush.size","134217728"))/1024/1024;
+			
+			numberOfRregion = (int) ((int)(memstoreSize)*memstoreUppLimit/memstoreFlush)*(serversNum-deadserversNum);
 			
 			for (int i = 0; i < numberOfRregion; i++) {
 				region_ranger.add("region_"+ String.valueOf(i));

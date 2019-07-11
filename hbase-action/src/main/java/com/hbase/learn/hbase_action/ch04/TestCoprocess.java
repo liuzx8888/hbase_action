@@ -7,8 +7,12 @@ import java.util.NavigableMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.Coprocessor;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
@@ -25,12 +29,25 @@ public class TestCoprocess {
 public static void main(String[] args) throws Exception {
 	Configuration conf = HBaseConfiguration.create();
 	HBaseHelper helper = HBaseHelper.getHelper(conf);
-//	helper.dropTable("testtable_idx_idx");
-//	helper.createTable("testtable", "colfam1");
-//	helper.fillTable("testtable", 1, 10, 10, "colfam1");
+	Connection connection = ConnectionFactory.createConnection(conf);
+	
+	helper.dropTable("testtable");
+//	helper.dropTable("testtable_idx");	
+//	helper.dropTable("testtable_idx_idx");	
+	
+	HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable"));
+	htd.addFamily(new HColumnDescriptor("colfam1"));
+	htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/index.jar" + "|"
+			+ "com.hbase.learn.hbase_action.ch04.RegionObserverExample2"+ "|" + Coprocessor.PRIORITY_USER);
+
+	
+	Admin admin = connection.getAdmin();
+	admin.createTable(htd);
+	
+	//helper.fillTable("testtable", 1, 10, 10, "colfam1");
 	
 
-	Connection connection = ConnectionFactory.createConnection(conf);
+
 	Table table = connection.getTable(TableName.valueOf("testtable"));
 	
 	Get get = new Get(Bytes.toBytes("@@@GETTIME@@@") );

@@ -2,9 +2,8 @@ package com.hbase.learn.hbase_action.ch05;
 
 import java.io.IOException;
 
-import javax.print.attribute.standard.Compression;
-
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Coprocessor;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -14,11 +13,10 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
-import org.apache.hadoop.hbase.regionserver.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
-
 import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.ch04.RegionObserverExample2;
 
 public class HTableDescriptorExamole {
 
@@ -60,14 +58,17 @@ public class HTableDescriptorExamole {
 	public static void main(String[] args) throws IOException {
 
 		helper.dropTable("testtable_htd");
+		//helper.dropTable("testtable_htd_idx");		
 		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable_htd"));
 		htd.addFamily(
 				new HColumnDescriptor("colfam1")
-				.setValue("test_key", "test_value")
+				//.setValue("test_key", "test_value")
 				//.setBloomFilterType(BloomType.ROW)
 				.setCompactionCompressionType(Algorithm.SNAPPY)
 				);
-
+		//alter 'testtable' ,METHOD=>'table_att','coprocessor$1'=>'hdfs:///hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar|com.hbase.learn.hbase_action.ch04.RegionObserverExample2|1001'
+		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
+				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
 		Admin admin = conn.getAdmin();
 		System.out.println("ServersSize :  " +admin.getClusterStatus().getServersSize());
 		/*

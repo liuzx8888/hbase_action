@@ -2,9 +2,15 @@ package com.hbase.learn.hbase_action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.MD5Hash;
 
 import com.hbase.learn.hbase_action.ConsistentHash.HashFunc;
 import com.hbase.learn.hbase_action.ch05.ConsistentHash_String;
+import com.hbase.learn.hbase_action.ch05.RegionConsistentHash;
 
 public class TestMain {
 	 public static void main(String[] args) {
@@ -37,8 +43,24 @@ public class TestMain {
 //	        System.out.println(consistentHash.get("b")+   consistentHash.get("b").hashCode() );  
 //	        System.out.println(consistentHash.get("dsds")+   consistentHash.get("sdsd").hashCode() );  	        
 	        
-	        System.out.println(consistentHash.get("a"));
-	        System.out.println(consistentHash.get("b"));  
-	        System.out.println(consistentHash.get("d"));
+//	        System.out.println(consistentHash.get("a"));
+//	        System.out.println(consistentHash.get("b"));  
+//	        System.out.println(consistentHash.get("d"));
+	        char[] A_z = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+	                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+	        Random r = new Random();   
+	        
+	        for (int i = 0; i < 10; i++) { 
+	        	System.out.println(
+						RegionConsistentHash.getRegion(
+						  MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0,8))	
+						  // +"-union-" 
+						   +"-"
+						   + MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0,8)						   
+	        			) 
+	        			;
+	        
+														
 		}
 }
+	 }

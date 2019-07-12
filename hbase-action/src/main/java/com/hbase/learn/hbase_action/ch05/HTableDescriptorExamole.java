@@ -67,8 +67,8 @@ public class HTableDescriptorExamole {
 				.setCompactionCompressionType(Algorithm.SNAPPY)
 				);
 		//alter 'testtable' ,METHOD=>'table_att','coprocessor$1'=>'hdfs:///hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar|com.hbase.learn.hbase_action.ch04.RegionObserverExample2|1001'
-		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
-				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
+//		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
+//				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
 		Admin admin = conn.getAdmin();
 		System.out.println("ServersSize :  " +admin.getClusterStatus().getServersSize());
 		/*

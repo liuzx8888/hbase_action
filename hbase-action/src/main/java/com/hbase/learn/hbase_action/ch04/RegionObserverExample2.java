@@ -27,6 +27,7 @@ import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Durability;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.client.Table;
@@ -36,6 +37,7 @@ import org.apache.hadoop.hbase.coprocessor.ObserverContext;
 import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
 import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 import org.apache.hadoop.hbase.regionserver.HRegion;
+import org.apache.hadoop.hbase.regionserver.MiniBatchOperationInProgress;
 import org.apache.hadoop.hbase.regionserver.wal.WALEdit;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -54,11 +56,12 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		conf = HBaseConfiguration.create();
 		try {
 			helper = HBaseHelper.getHelper(conf);
+			conn = helper.getConnection();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Connection conn = helper.getConnection();
+		
 	}
 
 	@Override
@@ -90,25 +93,28 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 
 		TableName tableName = e.getEnvironment().getRegion().getTableDesc().getTableName();
 		String idx_tableName = tableName.getNameAsString() + "_idx";
+	
 		if (!helper.existsTable(idx_tableName)) {
-			 helper.createTable(idx_tableName, "family");
-//			HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(idx_tableName));
-//			htd.addFamily(new HColumnDescriptor("family").setCompactionCompressionType(Algorithm.SNAPPY));
-//			Admin admin = conn.getAdmin();
-//			RegionConsistentHash consistentHash = new RegionConsistentHash();
-//			byte[][] regionspilt = RegionConsistentHash.splitRegionKey();
-//			admin.createTable(htd, regionspilt);
+			// helper.createTable(idx_tableName, "family");
+			HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(idx_tableName));
+			htd.addFamily(new HColumnDescriptor("family").setCompactionCompressionType(Algorithm.SNAPPY));
+			Admin admin = conn.getAdmin();
+			RegionConsistentHash consistentHash = new RegionConsistentHash();
+			byte[][] regionspilt = RegionConsistentHash.splitRegionKey();
+			admin.createTable(htd, regionspilt);
 		}
-        String file = "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
-		FileSystem fs = FileSystem.get(URI.create(file), conf);  
-		Path path = new Path(file);  
-		FSDataOutputStream out = fs.create(path);  
+		
+
+//        String file = "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
+//		FileSystem fs = FileSystem.get(URI.create(file), conf);  
+//		Path path = new Path(file);  
+//		FSDataOutputStream out = fs.create(path);  
+//	
+//		out.write(  Bytes.toBytes("idx_tableName:"+ idx_tableName.toString()  + "table:"+   tableName));	
+//		out.close();  
+		
 		
 		Table table = conn.getTable(TableName.valueOf(idx_tableName));
-		out.write(Bytes.toBytes(table.toString()));	
-		out.close();  
-		
-		
 		NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
 		for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
 			List<Cell> cells = familyCell.getValue();
@@ -121,15 +127,22 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 					String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
 							cell.getValueLength());
 
-					 Put indexPut = new Put(rowkey_index.getBytes());
+					 Put indexPut = new Put(
+								 (  
+								 RegionConsistentHash.getRegion(rowkey_index)
+								 +'-'
+								 +rowkey_index
+								 )
+							 .getBytes()
+							 );
 					 indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
 					 table.put(indexPut);
 				}
 			}
 		}
 		
-		table.close();
-		conn.close();
+//		table.close();
+//		conn.close();
 	}
 
 	@Override
@@ -150,6 +163,8 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		conn.close();
 
 	}
+	
+
 
 	
 }

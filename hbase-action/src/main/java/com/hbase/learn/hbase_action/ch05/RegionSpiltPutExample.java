@@ -72,8 +72,11 @@ public class RegionSpiltPutExample {
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("id"), Bytes.toBytes(String.valueOf(i)));
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("name"), Bytes.toBytes("test" + String.valueOf(i)));
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("sex"), Bytes.toBytes("male"));
-
+				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("timestamp"), Bytes.toBytes(String.valueOf(System.currentTimeMillis()+i)));
+				
 				mutator.mutate(put1);
+				//table.put(put1);
+				
 			}
 
 		} catch (Exception e) {

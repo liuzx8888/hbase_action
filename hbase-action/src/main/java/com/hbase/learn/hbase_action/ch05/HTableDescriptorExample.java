@@ -11,6 +11,7 @@ import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -18,7 +19,7 @@ import org.apache.hadoop.hbase.util.Pair;
 import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch04.RegionObserverExample2;
 
-public class HTableDescriptorExamole {
+public class HTableDescriptorExample {
 
 	static Configuration conf;
 	static HBaseHelper helper;
@@ -28,8 +29,10 @@ public class HTableDescriptorExamole {
 
 		try {
 			conf = HBaseConfiguration.create();
+			conf.set("hbase.client.ipc.pool.type", "RoundRobinPool");
+			conf.set("hbase.client.ipc.pool.size", "50");
+			conn =ConnectionFactory.createConnection(conf);
 			helper = HBaseHelper.getHelper(conf);
-			conn = helper.getConnection();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,19 +59,32 @@ public class HTableDescriptorExamole {
 	}
 
 	public static void main(String[] args) throws IOException {
-
-		helper.dropTable("testtable_htd");
+        String table_name ="testtable_htd";
+		helper.dropTable(table_name);
 		//helper.dropTable("testtable_htd_idx");		
-		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf("testtable_htd"));
+		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(table_name));
+	
+		//alter 'testtable' ,METHOD=>'table_att','coprocessor$1'=>'hdfs:///hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar|com.hbase.learn.hbase_action.ch04.RegionObserverExample2|1001'
+		if (table_name.equals("testtable_htd")) {
+			htd.addFamily(
+					new HColumnDescriptor("colfam1")
+					//.setValue("test_key", "test_value")
+					//.setBloomFilterType(BloomType.ROW)
+					.setCompactionCompressionType(Algorithm.SNAPPY)
+					);
+			htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
+				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
+		}
+		
+		if (table_name.equals("testtable_htd_idx")) {
 		htd.addFamily(
-				new HColumnDescriptor("colfam1")
+				new HColumnDescriptor("family")
 				//.setValue("test_key", "test_value")
 				//.setBloomFilterType(BloomType.ROW)
 				.setCompactionCompressionType(Algorithm.SNAPPY)
 				);
-		//alter 'testtable' ,METHOD=>'table_att','coprocessor$1'=>'hdfs:///hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar|com.hbase.learn.hbase_action.ch04.RegionObserverExample2|1001'
-//		htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
-//				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
+		}
+		
 		Admin admin = conn.getAdmin();
 		System.out.println("ServersSize :  " +admin.getClusterStatus().getServersSize());
 		/*
@@ -99,7 +115,7 @@ public class HTableDescriptorExamole {
 		RegionConsistentHash consistentHash = new RegionConsistentHash();
 		byte[][] regionspilt=RegionConsistentHash.splitRegionKey();
 		admin.createTable(htd, regionspilt);
-		gettableRegion("testtable_htd");
+		gettableRegion(table_name);
 		
 		/*
 		 * 获取List Table
@@ -130,8 +146,8 @@ public class HTableDescriptorExamole {
 		/*
 		 * 查看表状态
 		 */
-		admin.isTableAvailable(TableName.valueOf("testtable_htd"));
-		System.out.println(admin.getTableDescriptor(TableName.valueOf("testtable_htd")));
+		admin.isTableAvailable(TableName.valueOf(table_name));
+		System.out.println(admin.getTableDescriptor(TableName.valueOf(table_name)));
 
 		
 		admin.close();

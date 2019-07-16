@@ -21,8 +21,8 @@
 			<artifactId>hadoop-client</artifactId>
 			<version>2.9.1</version>
 		</dependency>
-		
-		
+
+
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-auth</artifactId>
@@ -39,13 +39,13 @@
 			<artifactId>hbase-client</artifactId>
 			<version>1.4.9</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-server</artifactId>
 			<version>1.4.9</version>
-		</dependency>		
-		
+		</dependency>
+
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -62,7 +62,23 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>org.apache.phoenix</groupId>
+			<artifactId>phoenix-core</artifactId>
+			<version>4.14.2-HBase-1.4</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.apache.phoenix</groupId>
+			<artifactId>phoenix-client</artifactId>
+			<version>4.14.2-HBase-1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.lmax</groupId>
+			<artifactId>disruptor</artifactId>
+			<version>3.4.2</version>
+		</dependency>
 
 	</dependencies>
 </project>

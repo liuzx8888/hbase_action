@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,7 @@ import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Durability;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
@@ -61,13 +63,13 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
 	public void preGetOp(ObserverContext<RegionCoprocessorEnvironment> e, Get get, List<Cell> results)
 			throws IOException {
-	
+
 		LOG.debug("Got preGet for row: " + Bytes.toStringBinary(get.getRow()));
 		// vv RegionObserverWithBypassExample
 		if (Bytes.equals(get.getRow(), FIXED_ROW)) {
@@ -91,58 +93,59 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 	public void prePut(ObserverContext<RegionCoprocessorEnvironment> e, Put put, WALEdit edit, Durability durability)
 			throws IOException {
 
-		TableName tableName = e.getEnvironment().getRegion().getTableDesc().getTableName();
-		String idx_tableName = tableName.getNameAsString() + "_idx";
-	
-		if (!helper.existsTable(idx_tableName)) {
-			// helper.createTable(idx_tableName, "family");
-			HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(idx_tableName));
-			htd.addFamily(new HColumnDescriptor("family").setCompactionCompressionType(Algorithm.SNAPPY));
-			Admin admin = conn.getAdmin();
-			RegionConsistentHash consistentHash = new RegionConsistentHash();
-			byte[][] regionspilt = RegionConsistentHash.splitRegionKey();
-			admin.createTable(htd, regionspilt);
-		}
-		
+		// TableName tableName =
+		// e.getEnvironment().getRegion().getTableDesc().getTableName();
+		// String idx_tableName = tableName.getNameAsString() + "_idx";
+		//
+		// if (!helper.existsTable(idx_tableName)) {
+		// // helper.createTable(idx_tableName, "family");
+		// HTableDescriptor htd = new
+		// HTableDescriptor(TableName.valueOf(idx_tableName));
+		// htd.addFamily(new
+		// HColumnDescriptor("family").setCompactionCompressionType(Algorithm.SNAPPY));
+		// Admin admin = conn.getAdmin();
+		// RegionConsistentHash consistentHash = new RegionConsistentHash();
+		// byte[][] regionspilt = RegionConsistentHash.splitRegionKey();
+		// admin.createTable(htd, regionspilt);
+		// }
+		//
+		// // String file =
+		// // "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
+		// // FileSystem fs = FileSystem.get(URI.create(file), conf);
+		// // Path path = new Path(file);
+		// // FSDataOutputStream out = fs.create(path);
+		// //
+		// // out.write( Bytes.toBytes("idx_tableName:"+ idx_tableName.toString() +
+		// // "table:"+ tableName));
+		// // out.close();
+		//
+		// Table table = conn.getTable(TableName.valueOf(idx_tableName));
+		// NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
+		// for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
+		// List<Cell> cells = familyCell.getValue();
+		// for (Cell cell : cells) {
+		// String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
+		// cell.getFamilyLength());
+		// String qualifier = Bytes.toString(cell.getQualifierArray(),
+		// cell.getQualifierOffset(),
+		// cell.getQualifierLength());
+		// if (qualifier.equalsIgnoreCase("timestamp")) {
+		// byte[] rowkey = cell.getRow();
+		// String rowkey_index = Bytes.toString(cell.getValueArray(),
+		// cell.getValueOffset(),
+		// cell.getValueLength());
+		//
+		// Put indexPut = new Put(
+		// (RegionConsistentHash.getRegion(rowkey_index) + '-' +
+		// rowkey_index).getBytes());
+		// indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
+		// table.put(indexPut);
+		// }
+		// }
+		// }
 
-//        String file = "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
-//		FileSystem fs = FileSystem.get(URI.create(file), conf);  
-//		Path path = new Path(file);  
-//		FSDataOutputStream out = fs.create(path);  
-//	
-//		out.write(  Bytes.toBytes("idx_tableName:"+ idx_tableName.toString()  + "table:"+   tableName));	
-//		out.close();  
-		
-		
-		Table table = conn.getTable(TableName.valueOf(idx_tableName));
-		NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
-		for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
-			List<Cell> cells = familyCell.getValue();
-			for (Cell cell : cells) {
-				String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(), cell.getFamilyLength());
-				String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
-						cell.getQualifierLength());
-				if (qualifier.equalsIgnoreCase("timestamp")) {
-					byte[] rowkey = cell.getRow();
-					String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
-							cell.getValueLength());
-
-					 Put indexPut = new Put(
-								 (  
-								 RegionConsistentHash.getRegion(rowkey_index)
-								 +'-'
-								 +rowkey_index
-								 )
-							 .getBytes()
-							 );
-					 indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
-					 table.put(indexPut);
-				}
-			}
-		}
-		
-//		table.close();
-//		conn.close();
+		// table.close();
+		// conn.close();
 	}
 
 	@Override
@@ -154,7 +157,6 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		Table table = conn.getTable(TableName.valueOf(idx_tableName));
 		byte[] rowkey = delete.getRow();
 
-
 		if (helper.existsTable(idx_tableName)) {
 			Delete del = new Delete(rowkey);
 			table.delete(del);
@@ -163,8 +165,65 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		conn.close();
 
 	}
-	
+
+	@Override
+	public void preBatchMutate(ObserverContext<RegionCoprocessorEnvironment> c,
+			MiniBatchOperationInProgress<Mutation> miniBatchOp) throws IOException {
+		// TODO Auto-generated method stub
+
+		BufferedMutator.ExceptionListener listener = new ExceptionListener() {
+			@Override
+			public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator mutator)
+					throws RetriesExhaustedWithDetailsException {
+				// TODO Auto-generated method stub
+				for (int i = 0; i < e.getNumExceptions(); i++) {
+					LOG.info("Failed to sent put " + e.getRow(i) + ".");
+				}
+			}
+		};
+
+		TableName tableName = c.getEnvironment().getRegion().getTableDesc().getTableName();
+		String idx_tableName = tableName.getNameAsString() + "_idx";
+		Table table = conn.getTable(TableName.valueOf(idx_tableName));
 
 
-	
+		BufferedMutatorParams params = new BufferedMutatorParams(table.getName()).listener(listener);
+		params.writeBufferSize(123123L);
+
+		BufferedMutator mutator = conn.getBufferedMutator(params);
+		for (int i = 0; i < miniBatchOp.size(); i++) {
+			Put put = null;
+			Mutation op = miniBatchOp.getOperation(i);
+			if (!(op instanceof Put))
+				continue;
+
+			put = (Put) miniBatchOp.getOperation(0);
+
+			NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
+			for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
+				List<Cell> cells = familyCell.getValue();
+				for (Cell cell : cells) {
+					String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
+							cell.getFamilyLength());
+					String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
+							cell.getQualifierLength());
+					
+					if (qualifier.equalsIgnoreCase("timestamp")) {
+						byte[] rowkey = cell.getRow();
+						String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
+								cell.getValueLength());
+						Put indexPut = new Put(
+								(RegionConsistentHash.getRegion(rowkey_index) + '-' + rowkey_index).getBytes());
+						indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
+						//table.put(indexPut);
+						mutator.mutate(indexPut);
+					}
+				}
+			}
+
+		}
+		table.close();
+		mutator.close();
+	}
+
 }

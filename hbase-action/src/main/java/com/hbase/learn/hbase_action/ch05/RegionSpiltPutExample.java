@@ -12,6 +12,7 @@ import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.BufferedMutator;
 import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.client.Table;
@@ -29,7 +30,13 @@ public class RegionSpiltPutExample {
 		Configuration conf = HBaseConfiguration.create();
 		HBaseHelper helper = HBaseHelper.getHelper(conf);
 
-		Connection conn = helper.getConnection();
+		//Connection conn = helper.getConnection();
+		conf.set("hbase.client.ipc.pool.type", "RoundRobinPool");
+		conf.set("hbase.client.ipc.pool.size", "50");
+		Connection conn =ConnectionFactory.createConnection(conf);
+		helper = HBaseHelper.getHelper(conf);
+		
+		
 
 		TableName tn = TableName.valueOf("testtable_htd");
 		Table table = conn.getTable(tn);
@@ -56,7 +63,7 @@ public class RegionSpiltPutExample {
  
 		try {
 			BufferedMutator mutator = conn.getBufferedMutator(params);
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 100; i++) {
 				Put put1 = new Put(
 						Bytes.toBytes(
 								RegionConsistentHash.getRegion(

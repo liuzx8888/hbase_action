@@ -52,6 +52,16 @@
 	</property>
 
 
+	<property>
+		<name>hbase.client.ipc.pool.type</name>
+		<value>RoundRobinPool</value>
+	</property>
+
+	<property>
+		 
+		<name>hbase.client.ipc.pool.size</name>
+		<value>50</value>
+	</property>
 
 
 

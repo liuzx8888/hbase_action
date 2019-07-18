@@ -1,6 +1,7 @@
 package com.hbase.learn.hbase_action.ch05;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Coprocessor;
@@ -16,6 +17,10 @@ import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
+import org.apache.phoenix.query.QueryServices;
+import org.apache.phoenix.query.QueryServicesOptions;
+import org.apache.phoenix.util.SchemaUtil;
+
 import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch04.RegionObserverExample2;
 
@@ -111,7 +116,9 @@ public class HTableDescriptorExample {
 //		      Bytes.toBytes("O"),
 //		      Bytes.toBytes("T")  
 //		};
+		
 
+		 
 		RegionConsistentHash consistentHash = new RegionConsistentHash();
 		byte[][] regionspilt=RegionConsistentHash.splitRegionKey();
 		admin.createTable(htd, regionspilt);

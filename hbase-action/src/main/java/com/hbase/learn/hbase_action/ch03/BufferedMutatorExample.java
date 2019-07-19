@@ -26,7 +26,7 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.hbase.learn.common.HBaseHelper;
-import com.hbase.learn.hbase_action.ch05.RegionConsistentHash;
+import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
 
 public class BufferedMutatorExample {
 
@@ -62,7 +62,7 @@ public class BufferedMutatorExample {
 				// Put put1 = new Put(Bytes.toBytes("row"+ String.valueOf(i)));
 
 				Put put1 = new Put(Bytes.toBytes(
-						RegionConsistentHash.getRegion("row" + String.valueOf(i)) +"-"+ String.valueOf(i)));
+						RegionConsistentHashSpilt.getRegion("row" + String.valueOf(i)) +"-"+ String.valueOf(i)));
 
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("id"), Bytes.toBytes(String.valueOf(i)));
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("name"),

@@ -66,7 +66,7 @@ public class RegionSpiltPutExample {
 			for (int i = 0; i < 100; i++) {
 				Put put1 = new Put(
 						Bytes.toBytes(
-								RegionConsistentHash.getRegion(
+								RegionConsistentHashSpilt.getRegion(
 									MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0,8))	
 								  // +"-union-" 
 								   +"-"

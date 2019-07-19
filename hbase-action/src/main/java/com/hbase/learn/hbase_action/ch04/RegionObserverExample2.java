@@ -44,7 +44,7 @@ import org.apache.hadoop.hbase.regionserver.wal.WALEdit;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.hbase.learn.common.HBaseHelper;
-import com.hbase.learn.hbase_action.ch05.RegionConsistentHash;
+import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
 
 public class RegionObserverExample2 extends BaseRegionObserver {
 	public static final Log LOG = LogFactory.getLog(HRegion.class);
@@ -213,7 +213,7 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 						String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
 								cell.getValueLength());
 						Put indexPut = new Put(
-								(RegionConsistentHash.getRegion(rowkey_index) + '-' + rowkey_index).getBytes());
+								(RegionConsistentHashSpilt.getRegion(rowkey_index) + '-' + rowkey_index).getBytes());
 						indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
 						//table.put(indexPut);
 						mutator.mutate(indexPut);

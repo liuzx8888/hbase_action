@@ -34,8 +34,8 @@ public class HashByteTest {
 	        for (int i = 0; i < 1000; i++) { 
 	        	//String rowkey = MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0, 8)+"-"+ String.valueOf(i);
 	        	
-
-	        	String rowkey = Long.toString(Long.MAX_VALUE);
+	        	System.out.println(Long.MAX_VALUE); //1563960847223
+	        	String rowkey = Long.toString( 1563962917469L);
 	        	
 		
 				byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(rowkey), 1, rowkey.length() - 1, regionNum);

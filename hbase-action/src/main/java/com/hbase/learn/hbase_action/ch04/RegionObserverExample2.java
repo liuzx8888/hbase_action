@@ -213,25 +213,28 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 			String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
 					cell.getQualifierLength());
 			long timestamp =cell.getTimestamp();
+		
+			  String file =
+					  "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
+					  FileSystem fs = FileSystem.get(URI.create(file), conf);
+					  Path path = new Path(file);
+					  FSDataOutputStream out = fs.create(path);
+					 
+					  out.write( 
+							  Bytes.toBytes(
+										  "idx_tableName:"+ idx_tableName.toString() 
+										  +"table:"+ tableName
+										  +"timestamp:"+ timestamp										  
+									  )
+							  );
+					  out.close();		
+			
+			
 			byte[] oldrowkey = cell.getRow();
 			byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(timestamp), 1, Long.toString(timestamp).length()-1, regionnum);
 			byte[] newRowkey =RegionSaltSpilt.newRowKey(oldrowkey, rowsalt);
 
-			  String file =
-			  "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
-			  FileSystem fs = FileSystem.get(URI.create(file), conf);
-			  Path path = new Path(file);
-			  FSDataOutputStream out = fs.create(path);
-			 
-			  out.write( 
-					  Bytes.toBytes(
-								  "idx_tableName:"+ idx_tableName.toString() 
-								  +"table:"+ tableName
-								  +"oldrowkey:"+ oldrowkey		
-								  +"newRowkey:"+ newRowkey										  
-							  )
-					  );
-			  out.close();		
+			
 			
 			
 			

@@ -47,5 +47,15 @@ public class RegionSaltSpilt {
 		}
 		return splitkey;
 	}
+	
+	public static byte[] newRowKey(byte[] oldrowkey,byte rowsalt) {
+		byte[] newBound=RegionSaltSpilt.fillKey(new byte[] {rowsalt}, 5);
+		byte[] byterowkey = oldrowkey;
+		byte[] newbyterowkey  = new byte[newBound.length+byterowkey.length] ;
+		System.arraycopy(newBound, 0, newbyterowkey, 0, newBound.length);
+		System.arraycopy(byterowkey, 0, newbyterowkey, newBound.length, byterowkey.length);
+		return newbyterowkey;
+	}
+	
 
 }

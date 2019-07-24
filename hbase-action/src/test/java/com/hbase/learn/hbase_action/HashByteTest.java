@@ -32,8 +32,11 @@ public class HashByteTest {
 	        Random r = new Random();   
 	        int regionNum =new RegionSpiltNum(8).regionNum();
 	        for (int i = 0; i < 1000; i++) { 
-	        	String rowkey = MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0, 8)+"-"+ String.valueOf(i);
+	        	//String rowkey = MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0, 8)+"-"+ String.valueOf(i);
+	        	
 
+	        	String rowkey = Long.toString(Long.MAX_VALUE);
+	        	
 		
 				byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(rowkey), 1, rowkey.length() - 1, regionNum);
 				byte[] newbyterowkey = RowKeySaltUtil.new_rowkey_hash(rowsalt, rowkey);

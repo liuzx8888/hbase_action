@@ -31,6 +31,7 @@ import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.client.BufferedMutator.ExceptionListener;
@@ -42,9 +43,12 @@ import org.apache.hadoop.hbase.regionserver.HRegion;
 import org.apache.hadoop.hbase.regionserver.MiniBatchOperationInProgress;
 import org.apache.hadoop.hbase.regionserver.wal.WALEdit;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
 import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
+import com.hbase.learn.hbase_action.ch05.RegionSaltSpilt;
+import com.hbase.learn.hbase_action.ch05.RowKeySaltUtil;
 
 public class RegionObserverExample2 extends BaseRegionObserver {
 	public static final Log LOG = LogFactory.getLog(HRegion.class);
@@ -183,14 +187,18 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 		};
 
 		TableName tableName = c.getEnvironment().getRegion().getTableDesc().getTableName();
-		String idx_tableName = tableName.getNameAsString() + "_idx";
-		Table table = conn.getTable(TableName.valueOf(idx_tableName));
+		String idx_tab= tableName.getNameAsString() + "_idx";
+		TableName idx_tableName = TableName.valueOf(idx_tab);
+		Table table = conn.getTable(idx_tableName);
+		RegionLocator locator = conn.getRegionLocator(idx_tableName);
+		Pair<byte[][], byte[][]> pair = locator.getStartEndKeys();
+		int regionnum =pair.getFirst().length;
 
-
-		BufferedMutatorParams params = new BufferedMutatorParams(table.getName()).listener(listener);
+		BufferedMutatorParams params = new BufferedMutatorParams(idx_tableName).listener(listener);
 		params.writeBufferSize(123123L);
 
 		BufferedMutator mutator = conn.getBufferedMutator(params);
+		
 		for (int i = 0; i < miniBatchOp.size(); i++) {
 			Put put = null;
 			Mutation op = miniBatchOp.getOperation(i);
@@ -198,28 +206,63 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 				continue;
 
 			put = (Put) miniBatchOp.getOperation(0);
+			Entry<byte[], List<Cell>> familyCell =put.getFamilyCellMap().firstEntry();
+			Cell cell = familyCell.getValue().get(0);
+			String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
+					cell.getFamilyLength());
+			String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
+					cell.getQualifierLength());
+			long timestamp =cell.getTimestamp();
+			byte[] oldrowkey = cell.getRow();
+			byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(timestamp), 1, Long.toString(timestamp).length()-1, regionnum);
+			byte[] newRowkey =RegionSaltSpilt.newRowKey(oldrowkey, rowsalt);
 
-			NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
-			for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
-				List<Cell> cells = familyCell.getValue();
-				for (Cell cell : cells) {
-					String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
-							cell.getFamilyLength());
-					String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
-							cell.getQualifierLength());
-					
-					if (qualifier.equalsIgnoreCase("timestamp")) {
-						byte[] rowkey = cell.getRow();
-						String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
-								cell.getValueLength());
-						Put indexPut = new Put(
-								(RegionConsistentHashSpilt.getRegion(rowkey_index) + '-' + rowkey_index).getBytes());
-						indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
-						//table.put(indexPut);
-						mutator.mutate(indexPut);
-					}
-				}
-			}
+			  String file =
+			  "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
+			  FileSystem fs = FileSystem.get(URI.create(file), conf);
+			  Path path = new Path(file);
+			  FSDataOutputStream out = fs.create(path);
+			 
+			  out.write( 
+					  Bytes.toBytes(
+								  "idx_tableName:"+ idx_tableName.toString() 
+								  +"table:"+ tableName
+								  +"oldrowkey:"+ oldrowkey		
+								  +"newRowkey:"+ newRowkey										  
+							  )
+					  );
+			  out.close();		
+			
+			
+			
+			Put indexPut= new Put(newRowkey);
+			indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), oldrowkey);
+			mutator.mutate(indexPut);
+			
+//			NavigableMap<byte[], List<Cell>> FamilyCells = put.getFamilyCellMap();
+//			for (Entry<byte[], List<Cell>> familyCell : FamilyCells.entrySet()) {
+//				List<Cell> cells = familyCell.getValue();
+//				for (Cell cell : cells) {
+//					String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
+//							cell.getFamilyLength());
+//					String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
+//							cell.getQualifierLength());
+//					
+//					long timestamp =cell.getTimestamp();					
+//					
+//					if (qualifier.equalsIgnoreCase("isdelete")) {
+//						byte[] rowkey = cell.getRow();
+//						long timestamp =  cell.getTimestamp();
+//						String rowkey_index = Bytes.toString(cell.getValueArray(), cell.getValueOffset(),
+//								cell.getValueLength());
+//						Put indexPut = new Put(
+//								(RegionConsistentHashSpilt.getRegion(rowkey_index) + '-' + rowkey_index).getBytes());
+//						indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), rowkey);
+//						//table.put(indexPut);
+//						mutator.mutate(indexPut);
+//					}
+//				}
+//			}
 
 		}
 		table.close();

@@ -59,7 +59,7 @@ public class RegionSpiltPutExample {
 		try {
 
 			BufferedMutator mutator = conn.getBufferedMutator(params);
-			for (int i = 1; i < 50000; i++) {
+			for (int i = 1; i < 10; i++) {
 				String rowkey = MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0, 8)+"-"+ String.valueOf(i);
 				
 				byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(rowkey), 1, rowkey.length() - 1, regionNum);
@@ -74,16 +74,6 @@ public class RegionSpiltPutExample {
 				
 				
 				Put put1 = new Put(
-
-//								Bytes.toBytes(
-//										RegionConsistentHash.getRegion(
-//											MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)])).substring(0,8))	
-//										  // +"-union-" 
-//										   +"-"
-//										   + MD5Hash.getMD5AsHex(Bytes.toBytes(A_z[r.nextInt(A_z.length)]+A_z[r.nextInt(A_z.length)])).substring(0,8)		
-//										   +"-"
-//										   + MD5Hash.getMD5AsHex(Bytes.toBytes(i)).substring(0,8)							
-//								)
 						newbyterowkey
 						);
 				put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("id"), Bytes.toBytes(String.valueOf(i)));

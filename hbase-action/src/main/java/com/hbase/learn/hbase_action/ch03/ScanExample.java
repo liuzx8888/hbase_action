@@ -20,24 +20,28 @@ public class ScanExample {
 		HBaseHelper helper = HBaseHelper.getHelper(conf);
 		Connection conn = helper.getConnection();
 
-		helper.dropTable("testtable");
-		helper.createTable("testtable", "colfam1", "colfam2");
-		System.out.println("Adding rows to table...");
-		// Tip: Remove comment below to enable padding, adjust start and stop
-		// row, as well as columns below to match. See scan #5 comments.
-		helper.fillTable("testtable", 1, 100, 2, /* 3, false, */ "colfam1", "colfam2");
+//		helper.dropTable("testtable");
+//		helper.createTable("testtable", "colfam1", "colfam2");
+//		System.out.println("Adding rows to table...");
+//		// Tip: Remove comment below to enable padding, adjust start and stop
+//		// row, as well as columns below to match. See scan #5 comments.
+//		helper.fillTable("testtable", 1, 100, 2, /* 3, false, */ "colfam1", "colfam2");
 
-		Table table = conn.getTable(TableName.valueOf("testtable"));
+		Table table = conn.getTable(TableName.valueOf("testtable_htd"));
 
 		Scan scan = new Scan();
 		scan.addFamily(Bytes.toBytes("colfam1"))
-		        .setStartRow(Bytes.toBytes("row-10"))
-				.setStopRow(Bytes.toBytes("row-20"))
+		        .setLimit(1000)
+//		        .setStartRow(Bytes.toBytes("row-10"))
+//				.setStopRow(Bytes.toBytes("row-20"))
 				.setReversed(false);
 
 		ResultScanner result = table.getScanner(scan);
 		for (Result rs : result) {
-			System.out.println(rs);
+			byte[] newrowkey = new byte[ rs.getRow().length-1];
+			byte[] oldrowkey = rs.getRow();
+			System.arraycopy(oldrowkey, 1, newrowkey, 0, oldrowkey.length-1);
+			System.out.println(new String(newrowkey));
 		}
 
 	}

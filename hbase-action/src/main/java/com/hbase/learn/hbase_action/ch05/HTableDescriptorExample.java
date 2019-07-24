@@ -77,8 +77,8 @@ public class HTableDescriptorExample {
 					//.setBloomFilterType(BloomType.ROW)
 					.setCompactionCompressionType(Algorithm.SNAPPY)
 					);
-//			htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
-//				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
+			htd.setValue("COPROCESSOR$1", "hdfs://hadoop1:8020/user/hbase/customCoprocessor/indexjar.jar" + "|"
+				+  RegionObserverExample2.class.getCanonicalName() + "|" + Coprocessor.PRIORITY_USER);
 		}
 		
 		if (table_name.equals("testtable_htd_idx")) {

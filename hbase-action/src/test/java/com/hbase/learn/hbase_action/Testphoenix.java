@@ -10,16 +10,33 @@ import java.sql.Statement;
 import java.util.Random;
 
 import org.antlr.runtime.ANTLRReaderStream;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.MD5Hash;
 
+import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch05.RegionSpiltNum;
-
 public class Testphoenix {
 	
 	
 	public static void main(String[] args) throws SQLException, InterruptedException, IOException {
-
+//        Configuration conf = HBaseConfiguration.create();
+//        HBaseHelper helper = HBaseHelper.getHelper(conf);
+//        org.apache.hadoop.hbase.client.Connection  conn =  helper.getConnection();
+//        Admin admin = conn.getAdmin();
+//        Scan scan = new Scan().setLimit(1);
+//		scan.addFamily(Bytes.toBytes("colfam1"))
+//		.setReversed(false);
+//        Table table  = conn.getTable(TableName.valueOf("testtable_htd"));
+//        ResultScanner rs = table.getScanner(scan);
+//        System.out.println("rs"+rs.next().getRow());
+		 
 		Statement stmt = null;
 		ResultSet rset = null;
 
@@ -49,11 +66,14 @@ public class Testphoenix {
 //		}
 //		con.commit();
 		
-		String tablenameS ="testtable_htd";
-		PreparedStatement statement = con.prepareStatement("select * from ''"+tablenameS+"''");
+		//String tablenameS ="testtable_htd";
+		PreparedStatement statement = con.prepareStatement("select * from  \"testtable_htd\" limit 1000");
 		rset = statement.executeQuery();
 		while (rset.next()) {
-			System.out.println(rset.getString("mycolumn"));
+			byte[] newrowkey = new byte[rset.getString("ROW").length()-1];
+			byte[] oldrowkey = Bytes.toBytes(rset.getString("ROW")) ;
+			System.arraycopy(oldrowkey, 1, newrowkey, 0, oldrowkey.length-1);
+			System.out.println(new String(newrowkey));
 		}
 		statement.close();
 		con.close();

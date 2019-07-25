@@ -70,9 +70,9 @@ public class Testphoenix {
 		PreparedStatement statement = con.prepareStatement("select * from  \"testtable_htd\" limit 1000");
 		rset = statement.executeQuery();
 		while (rset.next()) {
-			byte[] newrowkey = new byte[rset.getString("ROW").length()-1];
+			byte[] newrowkey = new byte[rset.getString("ROW").length()-5];
 			byte[] oldrowkey = Bytes.toBytes(rset.getString("ROW")) ;
-			System.arraycopy(oldrowkey, 1, newrowkey, 0, oldrowkey.length-1);
+			System.arraycopy(oldrowkey, 1, newrowkey, 0, oldrowkey.length-5);
 			System.out.println(new String(newrowkey));
 		}
 		statement.close();

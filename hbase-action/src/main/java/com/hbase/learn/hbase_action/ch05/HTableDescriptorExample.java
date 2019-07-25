@@ -66,7 +66,7 @@ public class HTableDescriptorExample {
 	}
 
 	public static void main(String[] args) throws IOException {
-        String table_name ="testtable_htd";
+        String table_name ="testtable_htd_idx";
 		helper.dropTable(table_name);
 		//helper.dropTable("testtable_htd_idx");		
 		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(table_name));

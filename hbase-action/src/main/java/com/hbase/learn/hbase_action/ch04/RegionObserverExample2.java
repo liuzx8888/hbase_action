@@ -1,52 +1,41 @@
 package com.hbase.learn.hbase_action.ch04;
 
 import java.io.IOException;
-import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.CellScanner;
 import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.BufferedMutator;
+import org.apache.hadoop.hbase.client.BufferedMutator.ExceptionListener;
 import org.apache.hadoop.hbase.client.BufferedMutatorParams;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Durability;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.Mutation;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
 import org.apache.hadoop.hbase.client.Table;
-import org.apache.hadoop.hbase.client.BufferedMutator.ExceptionListener;
 import org.apache.hadoop.hbase.coprocessor.BaseRegionObserver;
 import org.apache.hadoop.hbase.coprocessor.ObserverContext;
 import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
-import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 import org.apache.hadoop.hbase.regionserver.HRegion;
 import org.apache.hadoop.hbase.regionserver.MiniBatchOperationInProgress;
 import org.apache.hadoop.hbase.regionserver.wal.WALEdit;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
 
-import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
 import com.hbase.learn.hbase_action.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.LongUtil;
 import com.hbase.learn.hbase_action.common.RegionSaltSpilt;
 import com.hbase.learn.hbase_action.common.RowKeySaltUtil;
 
@@ -207,36 +196,37 @@ public class RegionObserverExample2 extends BaseRegionObserver {
 
 			put = (Put) miniBatchOp.getOperation(0);
 			Entry<byte[], List<Cell>> familyCell =put.getFamilyCellMap().firstEntry();
+	
+
+
+			
+			
+			
+			
 			Cell cell = familyCell.getValue().get(0);
 			String family = Bytes.toString(cell.getFamilyArray(), cell.getFamilyOffset(),
 					cell.getFamilyLength());
 			String qualifier = Bytes.toString(cell.getQualifierArray(), cell.getQualifierOffset(),
 					cell.getQualifierLength());
 			long timestamp =cell.getTimestamp();
-		
-			  String file =
-					  "hdfs://hadoop1:8020/user/hbase/customCoprocessor/RegionObserver.txt";
-					  FileSystem fs = FileSystem.get(URI.create(file), conf);
-					  Path path = new Path(file);
-					  FSDataOutputStream out = fs.create(path);
-					 
-					  out.write( 
-							  Bytes.toBytes(
-										  "idx_tableName:"+ idx_tableName.toString() 
-										  +"table:"+ tableName
-										  +"timestamp:"+ timestamp										  
-									  )
-							  );
-					  out.close();		
+			
+			Cell cell_timestamp = CellUtil.createCell(cell.getRow(),cell.getFamily() , "timestamp".getBytes(),
+					timestamp, KeyValue.Type.Put.getCode(), Bytes.toBytes(timestamp));
+			put.add(cell_timestamp);
+			
+
+			int timestampsize = LongUtil.stringSize(timestamp);
+			byte[] timestamparray = new byte[timestampsize];
+			ByteBuffer buffer = ByteBuffer.allocate(timestampsize); 
+           	buffer.putLong(0, timestamp);
+           	timestamparray=buffer.array();
+				
 			
 			
 			byte[] oldrowkey = cell.getRow();
-			byte rowsalt = RowKeySaltUtil.rowkey_hash(Bytes.toBytes(timestamp), 1, Long.toString(timestamp).length()-1, regionnum);
-			byte[] newRowkey =RegionSaltSpilt.newRowKey(oldrowkey, rowsalt);
+			byte rowsalt = RowKeySaltUtil.rowkey_hash(timestamparray, 1,timestampsize-1 , regionnum);
+			byte[] newRowkey =RegionSaltSpilt.newRowKey(timestamparray, rowsalt);
 
-			
-			
-			
 			
 			Put indexPut= new Put(newRowkey);
 			indexPut.addColumn("family".getBytes(), "qualifier".getBytes(), oldrowkey);

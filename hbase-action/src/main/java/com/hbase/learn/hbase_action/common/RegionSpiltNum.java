@@ -1,4 +1,4 @@
-package com.hbase.learn.hbase_action.ch05;
+package com.hbase.learn.hbase_action.common;
 
 import java.io.IOException;
 
@@ -6,8 +6,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
-
-import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class RegionSpiltNum {
 	/*

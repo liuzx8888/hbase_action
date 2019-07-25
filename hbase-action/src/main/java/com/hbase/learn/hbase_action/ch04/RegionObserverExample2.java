@@ -46,9 +46,9 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
 
 import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
-import com.hbase.learn.hbase_action.ch05.RegionSaltSpilt;
-import com.hbase.learn.hbase_action.ch05.RowKeySaltUtil;
 import com.hbase.learn.hbase_action.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.RegionSaltSpilt;
+import com.hbase.learn.hbase_action.common.RowKeySaltUtil;
 
 public class RegionObserverExample2 extends BaseRegionObserver {
 	public static final Log LOG = LogFactory.getLog(HRegion.class);

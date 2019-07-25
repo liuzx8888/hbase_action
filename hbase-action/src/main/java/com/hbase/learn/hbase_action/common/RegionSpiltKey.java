@@ -1,4 +1,6 @@
-package com.hbase.learn.hbase_action.ch05;
+package com.hbase.learn.hbase_action.common;
+
+import com.hbase.learn.hbase_action.ch05.RegionConsistentHashSpilt;
 
 public class RegionSpiltKey {
 	/*

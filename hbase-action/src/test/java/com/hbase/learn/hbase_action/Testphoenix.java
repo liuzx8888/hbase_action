@@ -20,8 +20,8 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.MD5Hash;
 
-import com.hbase.learn.hbase_action.ch05.RegionSpiltNum;
 import com.hbase.learn.hbase_action.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.RegionSpiltNum;
 public class Testphoenix {
 	
 	

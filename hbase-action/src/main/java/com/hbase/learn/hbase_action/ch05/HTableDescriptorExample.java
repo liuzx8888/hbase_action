@@ -23,6 +23,8 @@ import org.apache.phoenix.util.SchemaUtil;
 
 import com.hbase.learn.hbase_action.ch04.RegionObserverExample2;
 import com.hbase.learn.hbase_action.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.RegionSpiltKey;
+import com.hbase.learn.hbase_action.common.RegionSpiltNum;
 
 public class HTableDescriptorExample {
 

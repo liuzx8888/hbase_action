@@ -1,4 +1,4 @@
-package com.hbase.learn.hbase_action.ch05;
+package com.hbase.learn.hbase_action.common;
 
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.util.hash.Hash;

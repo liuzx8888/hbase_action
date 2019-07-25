@@ -21,7 +21,8 @@ import org.apache.hadoop.hbase.filter.RowFilter;
 import org.apache.hadoop.hbase.filter.SkipFilter;
 import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.hbase.learn.common.HBaseHelper;
+
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 
 

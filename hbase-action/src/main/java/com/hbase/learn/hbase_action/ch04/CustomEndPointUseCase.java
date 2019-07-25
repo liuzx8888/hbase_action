@@ -15,8 +15,8 @@ import org.apache.hadoop.hbase.ipc.ServerRpcController;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.google.protobuf.RpcCallback;
-import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch04.getRowCountProtos.RowCountService;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class CustomEndPointUseCase {
 	public static void main(String[] args) throws Throwable {

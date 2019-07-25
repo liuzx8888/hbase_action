@@ -7,7 +7,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class RegionSpiltNum {
 	/*

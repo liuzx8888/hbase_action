@@ -23,7 +23,7 @@ import org.apache.hadoop.hbase.coprocessor.ObserverContext;
 import org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class TestCoprocess {
 public static void main(String[] args) throws Exception {

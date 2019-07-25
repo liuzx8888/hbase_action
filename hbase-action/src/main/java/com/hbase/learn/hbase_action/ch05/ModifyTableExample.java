@@ -13,7 +13,7 @@ import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class ModifyTableExample {
 	static Configuration conf;

@@ -1,4 +1,4 @@
-package com.hbase.learn.common;
+package com.hbase.learn.hbase_action.common;
 
 import java.io.Closeable;
 import java.io.IOException;

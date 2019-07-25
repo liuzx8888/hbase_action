@@ -16,7 +16,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class AppendExample {
 	public static void main(String[] args) throws IOException {

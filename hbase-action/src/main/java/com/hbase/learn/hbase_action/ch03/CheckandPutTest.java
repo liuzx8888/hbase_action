@@ -7,7 +7,8 @@ import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.hbase.learn.common.HBaseHelper;
+
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 
 public class CheckandPutTest {

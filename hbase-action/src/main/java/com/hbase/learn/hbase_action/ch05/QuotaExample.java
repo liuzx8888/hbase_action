@@ -20,7 +20,7 @@ import org.apache.hadoop.hbase.quotas.QuotaSettingsFactory;
 import org.apache.hadoop.hbase.quotas.ThrottleType;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class QuotaExample {
 	public static void main(String[] args) throws IOException {

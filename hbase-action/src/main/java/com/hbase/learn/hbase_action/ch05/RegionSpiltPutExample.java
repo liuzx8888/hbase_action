@@ -19,7 +19,7 @@ import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.MD5Hash;
 
-import com.hbase.learn.common.HBaseHelper;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class RegionSpiltPutExample {
 	private static final Log LOG = LogFactory.getLog(RegionSpiltPutExample.class);

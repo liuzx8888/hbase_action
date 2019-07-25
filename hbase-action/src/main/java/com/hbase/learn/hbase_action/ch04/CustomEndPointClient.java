@@ -14,8 +14,8 @@ import org.apache.hadoop.hbase.client.coprocessor.Batch;
 import org.apache.hadoop.hbase.ipc.BlockingRpcCallback;
 import org.apache.hadoop.hbase.ipc.ServerRpcController;
 
-import com.hbase.learn.common.HBaseHelper;
 import com.hbase.learn.hbase_action.ch04.RowSumProtos.RowSumService;
+import com.hbase.learn.hbase_action.common.HBaseHelper;
 
 public class CustomEndPointClient {
 	public static void main(String[] args) throws Throwable {

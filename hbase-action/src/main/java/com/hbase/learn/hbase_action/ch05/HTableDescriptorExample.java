@@ -66,7 +66,7 @@ public class HTableDescriptorExample {
 	}
 
 	public static void main(String[] args) throws IOException {
-        String table_name ="testtable_htd_idx";
+        String table_name ="testtable_htd";
 		helper.dropTable(table_name);
 		//helper.dropTable("testtable_htd_idx");		
 		HTableDescriptor htd = new HTableDescriptor(TableName.valueOf(table_name));
@@ -122,6 +122,7 @@ public class HTableDescriptorExample {
 
 		 
 	    int RegionNum = new RegionSpiltNum(8).regionNum();
+	    
 		byte[][] regionspilt= new RegionSpiltKey(2, RegionNum).splitRegionKey();
 		admin.createTable(htd, regionspilt);
 		gettableRegion(table_name);

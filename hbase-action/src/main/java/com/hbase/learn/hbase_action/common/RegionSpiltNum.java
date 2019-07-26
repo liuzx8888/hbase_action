@@ -39,13 +39,13 @@ public class RegionSpiltNum {
 		memstoreUppLimit = Float.valueOf(conf.get("hbase.regionserver.global.memstore.upperLimit", "0.4"));
 		memstoreFlush = Float.valueOf(conf.get("hbase.hregion.memstore.flush.size", "134217728")) / 1024 / 1024;
 			
-//		System.out.println(
-//				  "  serversNum :" +serversNum                        
-//				+ "  deadserversNum :" +deadserversNum                
-//				+ "  memstoreUppLimit :" +memstoreUppLimit            	
-//				+ "  memstoreFlush :" +memstoreFlush	                	
-//				+ "  memstoreSize :" +memstoreSize	                			
-//				);
+		System.out.println(
+				  "  serversNum :" +serversNum                        
+				+ "  deadserversNum :" +deadserversNum                
+				+ "  memstoreUppLimit :" +memstoreUppLimit            	
+				+ "  memstoreFlush :" +memstoreFlush	                	
+				+ "  memstoreSize :" +memstoreSize	                			
+				);
 		 
 		int RregionNum =  (int) (
 				(memstoreSize * 1024 * memstoreUppLimit/ memstoreFlush)
